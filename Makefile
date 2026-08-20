@@ -1,4 +1,3 @@
-include .env
 export
 
 define DOCKER_COMPOSE
