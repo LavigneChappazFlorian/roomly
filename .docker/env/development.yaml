@@ -1,0 +1,40 @@
+services:
+  backend:
+    container_name: "roomly_backend"
+    hostname: "dev_roomly_backend"
+    environment:
+      PORT: "3000"
+      DB_HOST: "pgsql"
+      DB_PORT: "5432"
+      DB_NAME: "roomly"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+    volumes:
+      - ../../../backend:/usr/src/backend
+      - /usr/src/backend/dist
+      - /usr/src/backend/node_modules
+
+  frontend:
+    container_name: "roomly_frontend"
+    hostname: "dev_roomly_frontend"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../../../frontend:/usr/src/frontend
+      - /usr/src/frontend/node_modules
+
+  pgsql:
+    container_name: "roomly_pgsql"
+    ports:
+      - "5432:5432"
+
+  adminer:
+    container_name: "roomly_adminer"
+    hostname: "dev_roomly_adminer"
+    ports:
+      - "8080:8080"
+
+networks:
+  proxy:
+    driver: bridge
+    external: true
