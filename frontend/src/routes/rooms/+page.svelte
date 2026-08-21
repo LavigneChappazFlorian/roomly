@@ -2,19 +2,84 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { io, Socket } from 'socket.io-client';
 	import Button from '../../components/ui/Button.svelte';
-	import Message from '../../components/ui/Message.svelte';
 	import LogoutIcon from '@iconify-svelte/material-symbols/logout';
 
-	let username: string | null;
+	let username: string | null = null;
+	let currentRoom: string = 'general';
+	let messageText: string = '';
+
+	type Message = { username: string; message: string; createdAt: string };
+	let messages: Message[] = [];
+
+	let socket: Socket;
+	let messagesContainer: HTMLDivElement;
 
 	onMount(() => {
 		username = localStorage.getItem('username');
+
+		socket = io('http://localhost:3000');
+
+		socket.on('connect', () => {
+			console.log(`Server connection successful with id: ${socket.id}`);
+			socket.emit('join_room', { room: currentRoom });
+		});
+
+		socket.on('load_messages', (loadedMessages: Message[]) => {
+			messages = loadedMessages;
+			scrollToBottom();
+		});
+
+		socket.on('receive_message', (newMsg: Message) => {
+			messages = [...messages, newMsg];
+			scrollToBottom();
+		});
+
+		return () => {
+			socket.disconnect();
+		};
 	});
+
+	const sendMessage = (event: Event) => {
+		event.preventDefault();
+
+		if (messageText.trim() && username && currentRoom) {
+			const payload = {
+				message: messageText.trim(),
+				username,
+				room: currentRoom,
+				createdAt: new Date().toISOString()
+			};
+
+			socket.emit('send_message', payload);
+			messageText = '';
+		}
+	};
+
+	const switchRoom = (newRoom: string) => {
+		if (newRoom === currentRoom) return;
+
+		socket.emit('leave_room', { room: currentRoom });
+
+		currentRoom = newRoom;
+		messages = [];
+
+		socket.emit('join_room', { room: currentRoom });
+		console.log('Selected room: ', currentRoom);
+	};
 
 	const logout = () => {
 		localStorage.setItem('username', '');
 		goto(resolve('/'));
+	};
+
+	const scrollToBottom = () => {
+		setTimeout(() => {
+			if (messagesContainer) {
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			}
+		}, 0);
 	};
 </script>
 
@@ -22,10 +87,10 @@
 	<aside class="menu">
 		<h3>Roomly</h3>
 		<ul class="menu_roomList">
-			<li class="active" data-room="general"># général</li>
-			<li data-room="frontend"># front-end</li>
-			<li data-room="backend"># back-end</li>
-			<li data-room="devops"># devops</li>
+			<li class:active={currentRoom === 'general'} onclick={() => switchRoom('general')}># général</li>
+			<li class:active={currentRoom === 'frontend'} onclick={() => switchRoom('frontend')}># front-end</li>
+			<li class:active={currentRoom === 'backend'} onclick={() => switchRoom('backend')}># back-end</li>
+			<li class:active={currentRoom === 'devops'} onclick={() => switchRoom('devops')}># devops</li>
 		</ul>
 		<div class="menu_user">
 			<p>Connecté en tant que {username}</p>
@@ -36,22 +101,30 @@
 			</div>
 		</div>
 	</aside>
+
 	<div class="chat">
 		<div>
-			<h3># Nom de la room - Description du salon</h3>
+			<h3># {currentRoom}</h3>
 		</div>
 		<aside class="chatBox">
-			<div class="chatBox_messages">
-				<Message username="Bob" message="Heya!" createdAt="Aujourd'hui à 15h26"></Message>
-				<Message username="Bob" message="Heya!" createdAt="Aujourd'hui à 15h26"></Message>
-				<Message username="Bob" message="Heya!" createdAt="Aujourd'hui à 15h26"></Message>
+			<div class="chatBox_messages" bind:this={messagesContainer}>
+				{#each messages as msg (msg.createdAt + msg.username)}
+					<div>
+						<p>
+							username: {msg.username} - message: {msg.message} - createdAt:
+							{msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+						</p>
+					</div>
+				{/each}
 			</div>
-			<form class="chatBox_messages_form">
-				<input type="text" />
+
+			<form class="chatBox_messages_form" onsubmit={sendMessage}>
+				<input type="text" bind:value={messageText} placeholder="Tapez votre message..." />
 				<Button type="submit">Send</Button>
 			</form>
 		</aside>
 	</div>
+
 	<div class="members">
 		<h3>Membres en direct</h3>
 	</div>
