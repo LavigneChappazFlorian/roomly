@@ -1,0 +1,34 @@
+@use 'sass:math';
+
+@function calculateRem($size) {
+	$remSize: math.div($size, 16px);
+	@return #{$remSize}rem;
+}
+
+@mixin fontSize($size) {
+	font-size: $size;
+	font-size: calculateRem($size * 1);
+	line-height: 1.25em;
+
+	@if $size > 16px {
+		@media (max-width: 1520px) {
+			font-size: calculateRem($size * 0.9);
+		}
+
+		@media (max-width: 1150px) {
+			font-size: calculateRem($size * 0.8);
+		}
+
+		@if $size >= 30px {
+			@media (max-width: 768px) {
+				font-size: calculateRem($size * 0.7);
+			}
+		}
+
+		@if $size > 40px {
+			@media (max-width: 600px) {
+				font-size: calculateRem($size * 0.5);
+			}
+		}
+	}
+}

@@ -11,8 +11,8 @@ services:
       DB_PASSWORD: "postgres"
     volumes:
       - ../../../backend:/usr/src/backend
-      - /usr/src/backend/dist
-      - /usr/src/backend/node_modules
+      - backend_dist:/usr/src/backend/dist
+      - backend_nodes_modules:/usr/src/backend/node_modules
 
   frontend:
     container_name: "roomly_frontend"
@@ -21,7 +21,7 @@ services:
       - "5173:5173"
     volumes:
       - ../../../frontend:/usr/src/frontend
-      - /usr/src/frontend/node_modules
+      - frontend_nodes_modules:/usr/src/frontend/node_modules
 
   pgsql:
     container_name: "roomly_pgsql"
@@ -38,3 +38,8 @@ networks:
   proxy:
     driver: bridge
     external: true
+
+volumes:
+  backend_dist:
+  backend_nodes_modules:
+  frontend_nodes_modules:

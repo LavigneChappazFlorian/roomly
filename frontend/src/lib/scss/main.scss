@@ -1,0 +1,49 @@
+@use './mixins.scss' as *;
+@use './reset.scss' as *;
+@use './variables.scss' as *;
+
+* {
+	overflow-wrap: break-word;
+	scroll-behavior: smooth;
+	color: currentColor;
+	transition: all 0.4s linear;
+}
+
+h1 {
+    @include fontSize(48px);
+}
+
+h2 {
+    @include fontSize(42px);
+}
+
+h3 {
+    @include fontSize(36px);
+}
+
+body {
+    font-family: "Inter";
+	font-weight: normal;
+	@include fontSize(16px);
+	line-height: 1.25em;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-weight: bold;
+	line-height: 1.25em;
+}
+
+.wrapper {
+	max-width: 1400px;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+
+	@media (max-width: 1440px) {
+		padding-left: 8vw;
+		padding-right: 8vw;
+	}
+}
