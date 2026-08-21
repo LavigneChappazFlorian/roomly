@@ -3,7 +3,7 @@
 	import { resolve } from '$app/paths';
 	import Button from '../components/ui/Button.svelte';
 
-	const handleSubmit = () => {
+	const login = () => {
 		let usernameInput = document.getElementById('username') as HTMLInputElement;
 		let username: string = usernameInput.value.trim();
 
@@ -35,7 +35,7 @@
 				<input type="text" id="username" name="username" placeholder="Enter your username" />
 				<div class="error"></div>
 			</div>
-			<Button onclick={handleSubmit} type="submit">Continue</Button>
+			<Button onclick={login} type="submit">Continue</Button>
 		</div>
 	</section>
 </main>

@@ -9,6 +9,8 @@ services:
       DB_NAME: "roomly"
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
+    ports:
+      - 3000:3000
     volumes:
       - ../../../backend:/usr/src/backend
       - backend_dist:/usr/src/backend/dist

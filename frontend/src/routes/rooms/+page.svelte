@@ -1,11 +1,25 @@
-<script>
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import Button from '../../components/ui/Button.svelte';
 	import Message from '../../components/ui/Message.svelte';
 	import LogoutIcon from '@iconify-svelte/material-symbols/logout';
+
+	let username: string | null;
+
+	onMount(() => {
+		username = localStorage.getItem('username');
+	});
+
+	const logout = () => {
+		localStorage.setItem('username', '');
+		goto(resolve('/'));
+	};
 </script>
 
 <section>
-	<div class="menu">
+	<aside class="menu">
 		<h3>Roomly</h3>
 		<ul class="menu_roomList">
 			<li class="active" data-room="general"># général</li>
@@ -14,17 +28,19 @@
 			<li data-room="devops"># devops</li>
 		</ul>
 		<div class="menu_user">
-			<p>Connecté en tant que Nom d'utilisateur</p>
+			<p>Connecté en tant que {username}</p>
 			<div class="menu_user_logout">
-				<LogoutIcon height="1.5em" />
+				<Button onclick={logout}>
+					<LogoutIcon height="1.5em" />
+				</Button>
 			</div>
 		</div>
-	</div>
+	</aside>
 	<div class="chat">
 		<div>
 			<h3># Nom de la room - Description du salon</h3>
 		</div>
-		<article class="chatBox">
+		<aside class="chatBox">
 			<div class="chatBox_messages">
 				<Message username="Bob" message="Heya!" createdAt="Aujourd'hui à 15h26"></Message>
 				<Message username="Bob" message="Heya!" createdAt="Aujourd'hui à 15h26"></Message>
@@ -32,9 +48,9 @@
 			</div>
 			<form class="chatBox_messages_form">
 				<input type="text" />
-				<Button content="Envoyer" type="submit"></Button>
+				<Button type="submit">Send</Button>
 			</form>
-		</article>
+		</aside>
 	</div>
 	<div class="members">
 		<h3>Membres en direct</h3>
@@ -55,10 +71,10 @@
 		}
 
 		.menu {
-            h3 {
-                padding: 1.5rem;
-            }
-			
+			h3 {
+				padding: 1.5rem;
+			}
+
 			width: 25%;
 			display: flex;
 			align-items: flex-start;
@@ -66,7 +82,7 @@
 			height: 100%;
 
 			&_roomList {
-                padding: 1.5rem;
+				padding: 1.5rem;
 				margin-top: 2rem;
 				list-style: none;
 				display: flex;
@@ -80,7 +96,7 @@
 					border-radius: 0.5rem;
 					color: $primary-color;
 					transition: 0.2s ease;
-                    cursor: pointer;
+					cursor: pointer;
 				}
 
 				li:hover {
@@ -99,22 +115,22 @@
 			}
 
 			&_user {
-                padding: 1.5rem;
-                background-color: #2e3a55;
+				padding: 1.5rem;
+				background-color: #2e3a55;
 				margin-top: auto;
 				display: flex;
 				align-items: center;
-                justify-content: space-between;
-                width: 100%;
-                height: 7%;
+				justify-content: space-between;
+				width: 100%;
+				height: 7%;
 				gap: 1rem;
 
-                &_logout {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                }
+				&_logout {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					cursor: pointer;
+				}
 			}
 		}
 
