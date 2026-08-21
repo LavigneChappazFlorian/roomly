@@ -10,14 +10,6 @@ const sequelize = new Sequelize({
   logging: false,
 })
 
-sequelize.authenticate()
-  .then(() => {
-    console.log("Database connection successfull!");
-  })
-  .catch((error) => {
-    console.error("Error Database connection: ", error);
-  })
-
 const Chat = require("../src/models/Chat")(sequelize, Sequelize.DataTypes);
 
 sequelize.sync()
