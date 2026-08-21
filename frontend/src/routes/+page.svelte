@@ -1,21 +1,42 @@
-<script>
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import Button from '../components/ui/Button.svelte';
+
+	const handleSubmit = () => {
+		let usernameInput = document.getElementById('username') as HTMLInputElement;
+		let username: string = usernameInput.value.trim();
+
+		try {
+			if (username) {
+				localStorage.setItem('username', username);
+				usernameInput.value = '';
+
+				goto(resolve('/rooms'));
+			} else {
+				alert("Missing username! Please enter your username");
+			}
+		} catch (error: unknown) {
+			console.error('Error: ', error);
+		}
+	};
 </script>
 
 <main>
-	<section class="login">
+	<section>
 		<div>
-			<h1 class="login_title">Roomly</h1>
-			<p class="login_catchphrase">Your topics, your spaces, zero messages lost.</p>
+			<h1>Roomly</h1>
+			<p>Your topics, your spaces, zero messages lost.</p>
 		</div>
 
-		<form action="">
-			<div>
+		<div class="form" id="form">
+			<div class="form_username">
 				<label for="username">Username</label>
-				<input type="text" name="username" placeholder="Enter your username" />
+				<input type="text" id="username" name="username" placeholder="Enter your username" />
+				<div class="error"></div>
 			</div>
-			<Button content="Continue" type="submit" />
-		</form>
+			<Button onclick={handleSubmit} type="submit">Continue</Button>
+		</div>
 	</section>
 </main>
 
@@ -28,7 +49,7 @@
 
 		height: 100vh;
 
-		.login {
+		section {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -52,26 +73,26 @@
 				text-align: center;
 			}
 
-			form {
+			.form {
 				display: flex;
 				flex-direction: column;
 				gap: 24px;
 
-				div {
+				&_username {
 					display: flex;
 					flex-direction: column;
 					gap: 6px;
-				}
 
-				input {
-					background-color: $background-color;
-					border: 1px solid $border-color;
-					border-radius: 4px;
-					color: $border-color;
+					input {
+						background-color: $background-color;
+						border: 1px solid $border-color;
+						border-radius: 4px;
+						color: $border-color;
 
-					height: 40px;
-					width: 100%;
-					padding: 16px 10px;
+						height: 40px;
+						width: 100%;
+						padding: 16px 10px;
+					}
 				}
 			}
 		}

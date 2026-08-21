@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { BtnProps } from './button.type';
+	import type { PropsButton } from './button.type';
 
-	let { type = 'button', content }: BtnProps = $props();
+	let { type = 'button', children, ...props }: PropsButton = $props();
 </script>
 
-<button {type}>
-    {content}
+<button {...props} type={type}>
+    {@render children()}
 </button>
 
 <style lang="scss">
